@@ -1,0 +1,40 @@
+admin_dashboard:
+    path:     /
+    defaults: { _controller: AdminBundle:Default:index }
+
+admin_categorie_ajoutpage:
+    path:     /Categories/Ajout
+    defaults: { _controller: AdminBundle:Categories:ajoutPage }
+
+admin_categorie_liste_page:
+    path:     /Categories
+    defaults: { _controller: AdminBundle:Categories:listePage }
+
+admin_produits_ajoutpage:
+    path:     /Produits/Ajout
+    defaults: { _controller: AdminBundle:Produits:ajoutPage }
+
+admin_produits_liste_page:
+    path:     /Produits
+    defaults: { _controller: AdminBundle:Produits:listePage }
+
+
+ajoutCategorie:
+    path:     /Categories/ajoutCategorie
+    defaults: { _controller: AdminBundle:Categories:ajoutCategorie}
+
+
+getCategoriesJson:
+    path:     /Categories/getCategoriesJson
+    defaults: { _controller: AdminBundle:Categories:getCategoriesJson}
+
+
+suppCategorie:
+    path:     /Categories/suppCategorie/{id}
+    defaults: { _controller: AdminBundle:Categories:suppCategorie}
+
+
+
+modifierCategorie:
+    path:     /Categories/modifierCategorie
+    defaults: { _controller: AdminBundle:Categories:modifierCategorie}

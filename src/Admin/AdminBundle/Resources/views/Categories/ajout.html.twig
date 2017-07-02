@@ -1,0 +1,163 @@
+{% extends "layouts/layoutadmin.html.twig" %}
+
+{% block breadcrumb %}
+
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h2>Ajout Categorie</h2>
+            <ol class="breadcrumb">
+                <li>
+                    <a href="{{ path('admin_dashboard') }}">Dashboard</a>
+                </li>
+
+                <li>
+                    <a href="{{ path('admin_categorie_liste_page') }}">Categorie</a>
+                </li>
+
+                <li class="active">
+                    <strong>Ajout Categorie </strong>
+                </li>
+            </ol>
+        </div>
+        <div class="col-lg-2">
+
+        </div>
+    </div>
+{% endblock %}
+
+{% block body %}
+
+
+    <div class="row" ng-controller="ajoutCatCtrl">
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+
+                <div class="ibox-content">
+
+
+
+
+                    <div class="spiner-example" ng-show="chargementAjout">
+                        <div class="sk-spinner sk-spinner-chasing-dots">
+                            <div class="sk-dot1"></div>
+                            <div class="sk-dot2"></div>
+                        </div>
+                    </div>
+
+                    <form method="get" class="form-horizontal" name="formAjoutCat" ng-hide="chargementAjout">
+                        <div class="form-group"><label class="col-sm-2 control-label">Nom :</label>
+
+                            <div class="col-sm-10"><input placeholder="Nom de la catégorie" required pattern="[a-zA-Z0-9 ]*" ng-model="txtNom" type="text" class="form-control"></div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group"><label class="col-sm-2 control-label">Description :</label>
+
+                            <div class="col-sm-10"><textarea type="text" ng-model="txtDesc" placeholder="Description de la catégorie" class="form-control" rows="5"></textarea></div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+
+                        <input type="file" file-model="photo"/>
+
+
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <div class="col-sm-4 col-sm-offset-2">
+                                <button class="btn btn-primary" type="submit" ng-click="ajouterCategorie(formAjoutCat,photo)">Enregistrer</button>
+
+                                <a href="{{ path('admin_dashboard') }}" class="btn btn-white" type="submit">Annuler</a>
+                            </div>
+                        </div>
+                    </form>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}
+
+{% block angular %}
+    <script>
+        appAdmin.controller("ajoutCatCtrl",function($scope,$http){
+
+            $scope.initFormulaire = function(){
+                $scope.txtNom = "";
+                $scope.txtDesc = "";
+            }
+
+            $scope.initFormulaire();
+
+
+
+
+            $scope.ajouterCategorie = function(form,photo){
+
+                if(form.$valid){
+
+
+                    $scope.chargementAjout = true;
+
+                    $scope.objToSend = {
+                        nom:$scope.txtNom,
+                        desc:$scope.txtDesc
+                    }
+
+
+                    var fd = new FormData();
+
+                    fd.append("photo",photo);
+
+                    fd.append("data" , JSON.stringify($scope.objToSend));
+
+
+
+                    $scope.url="http://localhost/annoncegames/web/app_dev.php/Admin/Categories/ajoutCategorie";
+
+
+                    $http.post($scope.url,fd, {
+                        transformRequest: angular.identity,
+                        headers: {'Content-Type': undefined}
+                    })
+                            .then(function(response){
+
+
+
+                                $scope.chargementAjout = false;
+
+                                if(response.data.success){
+                                    toastr.success(response.data.message,"Ajout Catégorie");
+
+                                    $scope.initFormulaire();
+
+                                }else{
+                                    toastr.warning(response.data.message,"Ajout Catégorie");
+
+                                }
+
+
+
+
+
+                            })
+
+
+
+                }else{
+
+                    toastr.warning('Form non valid','Formulaire!')
+
+
+                }
+
+
+
+
+            }
+
+
+        });
+    </script>
+
+{% endblock %}

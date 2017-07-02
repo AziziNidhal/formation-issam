@@ -1,0 +1,6 @@
+->git init // creat project git dans de dossier "dossier .git"
+->git remote add origin https://github.com/issamous/database.git  //configuration project local avec git reposetroy
+->git status  // etat project
+->git add . //preparation project pour le commit on local
+->git commit -m "mon message" //sauvragrd les fichier on local pour le commit
+->git push origin master //commit on ligne 

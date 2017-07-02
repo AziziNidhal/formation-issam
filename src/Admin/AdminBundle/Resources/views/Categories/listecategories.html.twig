@@ -1,0 +1,409 @@
+{% extends "layouts/layoutadmin.html.twig" %}
+{% block otherCss %}
+    <!-- FooTable -->
+    <link href="{{ asset('css/plugins/footable/footable.core.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block breadcrumb %}
+
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h2>Liste Categories</h2>
+            <ol class="breadcrumb">
+                <li>
+                    <a href="{{ path('admin_dashboard') }}">Dashboard</a>
+                </li>
+
+                <li class="active">
+                    <strong>Categories </strong>
+                </li>
+            </ol>
+        </div>
+        <div class="col-lg-2">
+
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block body %}
+
+
+
+    <div class="row" ng-controller="gestionCatCtrl" ng-init="txtSearch=''">
+        <div class="col-lg-12">
+            <div class="ibox">
+                <div class="ibox-content">
+
+
+
+
+                    <div class="row" ng-init="txtSearch=''">
+
+                        <div class="form-group">
+
+                            <div class="col-sm-1"></div>
+                            <div class="col-sm-10"><input placeholder="Chercher des catégories" ng-model="txtSearch" ng-change="getCategories(txtSearch)" type="text" class="form-control"></div>
+
+                        </div>
+
+                    </div>
+
+
+                    <table class="footable table table-stripped toggle-arrow-tiny" data-page-size="15">
+                        <thead>
+                        <tr>
+
+
+                            <th data-toggle="true">Nom Categorie</th>
+
+                            <th data-hide="phone">Description</th>
+                            <th data-hide="phone">Image</th>
+
+                            <th class="text-right" data-sort-ignore="true">Action</th>
+
+                        </tr>
+                        </thead>
+                        <tbody>
+
+
+                            <tr ng-repeat="categorie in categories" >
+                                <td ng-bind="categorie.nom">
+
+                                </td>
+                                <td ng-bind="categorie.desc">
+
+                                </td>
+                                <td>
+                                    <img alt="image" class="img-circle img-responsive" style="height: 90px;width: 90px" ng-src="%% categorie.img%%">
+                                </td>
+                                <td class="text-right">
+                                    <div class="btn-group">
+                                        <button class="btn-white btn btn-xs" ng-click="openModalDel(categorie.id,categorie.nom)">Supprimer</button>
+                                        <button class="btn-white btn btn-xs"  ng-click="openModalModif(categorie.id)">Modifier</button>
+                                    </div>
+                                </td>
+                            </tr>
+
+
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <td colspan="7" class="footable-visible">
+                                <ul class="pagination pull-right"><li class="footable-page-arrow disabled"><a data-page="first" href="#first">«</a></li><li class="footable-page-arrow disabled"><a data-page="prev" href="#prev">‹</a></li><li class="footable-page active"><a data-page="0" href="#">1</a></li><li class="footable-page"><a data-page="1" href="#">2</a></li><li class="footable-page"><a data-page="2" href="#">3</a></li><li class="footable-page-arrow"><a data-page="next" href="#next">›</a></li><li class="footable-page-arrow"><a data-page="last" href="#last">»</a></li></ul>
+                            </td>
+                        </tr>
+                        </tfoot>
+                    </table>
+
+
+
+                    <div class="modal inmodal fade" id="modalDelete" tabindex="-1" role="dialog"  aria-hidden="true">
+                        <div class="modal-dialog modal-sm">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                                    <h4 class="modal-title">Suppression</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <h3>
+                                        Vous etes sûr de <strong>supprimer</strong> la catégorie <span ng-bind="currentNameToDel"></span>
+
+
+                                    </h3>
+
+
+
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-danger" ng-click="deleteCategorie(currentIdToDel)">Supprimer</button>
+                                    <button type="button" class="btn btn-white" data-dismiss="modal">Annuler</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                    <div class="modal inmodal" id="modalModif" tabindex="-1" role="dialog" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content animated flipInY">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                                    <h4 class="modal-title">Modification</h4>
+                                    <small class="font-bold">Entrez les nouvelles coordonnées de la catégorie.</small>
+                                </div>
+                                <form method="get" class="form-horizontal" name="formModifCat">
+
+                                    <div class="modal-body" ng-init="chargementModif= false">
+
+
+
+
+
+                                        <div ng-show="chargementModif" >
+                                            <h3>Chargement en cours ...</h3>
+
+                                        </div>
+
+                                        <div ng-hide="chargementModif" >
+
+                                            <div class="form-group"><label class="col-sm-2 control-label">Nom :</label>
+
+                                                <div class="col-sm-10"><input placeholder="Nom de la catégorie" required pattern="[a-zA-Z0-9 ]*" ng-model="txtNom" type="text" class="form-control"></div>
+                                            </div>
+                                            <div class="hr-line-dashed"></div>
+                                            <div class="form-group"><label class="col-sm-2 control-label">Description :</label>
+
+                                                <div class="col-sm-10"><textarea type="text" ng-model="txtDesc" placeholder="Description de la catégorie" class="form-control" rows="5"></textarea></div>
+                                            </div>
+                                            <div class="hr-line-dashed"></div>
+
+                                            <input type = "file" file-model = "photo"/>
+
+
+                                            <div class="hr-line-dashed"></div>
+
+
+
+                                        </div>
+
+
+
+
+
+
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-white" data-dismiss="modal">Annuler</button>
+                                        <button type="button" class="btn btn-primary" ng-click="modifierCategorie(formModifCat,photo)">Modifier</button>
+                                    </div>
+
+                                </form>
+
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock  %}
+
+
+{% block otherJs %}
+    <!-- FooTable -->
+    <script src="{{ asset('js/plugins/footable/footable.all.min.js') }}"></script>
+
+    <!-- Page-Level Scripts -->
+    <script>
+        $(document).ready(function() {
+
+
+            $('.footable').footable();
+            $('.footable2').footable();
+
+        });
+
+    </script>
+
+{% endblock %}
+
+
+
+{% block angular %}
+    <script>
+
+
+
+        appAdmin.controller("gestionCatCtrl",function($scope,$http){
+            $scope.categories=[];
+            $scope.txtSearch="";
+            $scope.currentIdToUpdate = 0;
+
+            $scope.currentNameToDel = "";
+            $scope.currentIdToDel = 0;
+            $scope.nbrAppels=0;
+            $scope.getCategories = function(txtChange){
+                $scope.nbrAppels++;
+
+
+
+
+                if(txtChange == undefined){
+                    $scope.txtRecherche = "";
+                }else{
+                    $scope.txtRecherche = txtChange;
+                }
+
+
+                $scope.objToSend = {
+                    txt : $scope.txtRecherche
+                }
+
+                $scope.urlGetCat="http://localhost/annoncegames/web/app_dev.php/Admin/Categories/getCategoriesJson";
+
+                $http.post($scope.urlGetCat,$scope.objToSend)
+                        .then(function (response) {
+
+                            $scope.categories = response.data;
+
+                            if($scope.nbrAppels == 1){
+                                $('.footable').footable();
+                            }
+                        });
+
+
+            }
+
+            $scope.getCategories($scope.txtSearch);
+
+
+            /*
+
+
+             setInterval(function(){
+             $scope.getCategories($scope.txtSearch);
+
+             },3000);
+
+
+             */
+
+
+            $scope.openModalDel = function(id,nom){
+
+                $scope.currentNameToDel = nom;
+                $scope.currentIdToDel = id;
+                $("#modalDelete").modal('show');
+            }
+
+            $scope.deleteCategorie = function(id){
+
+
+                $scope.urlDel ="http://localhost/annoncegames/web/app_dev.php/Admin/Categories/suppCategorie/"+id;
+
+                $http.post($scope.urlDel)
+                        .then(function (reponse) {
+
+                            if(reponse.data.success){
+                                toastr.success(reponse.data.message,"Suppression");
+                            }else{
+                                toastr.error(reponse.data.message,"Suppression");
+                            }
+
+                            $scope.getCategories($scope.txtSearch);
+                            $("#modalDelete").modal('hide');
+
+                        });
+
+
+
+
+            }
+
+
+
+            $scope.openModalModif = function(id){
+                $("#modalModif").modal('show');
+
+
+                $scope.currentIdToUpdate = id;
+
+                $scope.currentObj = $scope.categories.filter(function (o) {
+                    return  o.id==id
+                })[0];
+
+
+                $scope.txtNom = $scope.currentObj.nom;
+                $scope.txtDesc = $scope.currentObj.desc;
+                console.log($scope.currentObj);
+
+
+
+            }
+
+
+
+            $scope.modifierCategorie = function(form,photo){
+
+
+                if(form.$valid){
+
+
+                    $scope.chargementModif = true;
+
+                    $scope.objToSend = {
+                        id:$scope.currentIdToUpdate,
+                        nom:$scope.txtNom,
+                        desc:$scope.txtDesc
+                    }
+
+                    var fd = new FormData();
+                    fd.append("photo" , photo);
+                    fd.append("data" , JSON.stringify($scope.objToSend))
+
+                    $scope.urlModif ="http://localhost/annoncegames/web/app_dev.php/Admin/Categories/modifierCategorie";
+
+                    $http.post($scope.urlModif,fd, {
+                        transformRequest: angular.identity,
+                        headers: {'Content-Type': undefined}
+                    })
+                            .then(function(response){
+
+                                $scope.chargementModif = false;
+
+                                if(response.data.success){
+                                    toastr.success(response.data.message,"Modification Catégorie");
+
+                                    $scope.getCategories($scope.txtSearch);
+                                    $("#modalModif").modal('hide');
+
+
+                                }else{
+                                    toastr.warning(response.data.message,"Modification Catégorie");
+
+                                }
+
+
+
+
+
+                            })
+
+
+
+                }else{
+
+                    toastr.warning('Form non valid','Formulaire!')
+
+
+                }
+
+
+
+
+            }
+
+
+
+
+
+
+
+
+
+        });
+
+
+    </script>
+
+
+{% endblock %}
+
+
